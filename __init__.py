@@ -3,7 +3,8 @@ import func
 
 if __name__ == '__main__':
     q = db.QueryTemplate()
-    q.createConnection("host=localhost port=5432 dbname=agens user=agens password=agens")
+#     q.createConnection("host=localhost port=5432 dbname=agens user=agens password=agens")
+    q.createConnectionPool(5,20,"host=localhost port=5432 dbname=agens user=agens password=agens")
     q.setGraphPath("tmp")
     print('####### start')
     
