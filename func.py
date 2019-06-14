@@ -3,7 +3,7 @@ import store
 
 class AnalysisClass():
     """
-    constructor
+    initialize
     """
     def __init__(self, datum, cluster):
         self.datum = datum
