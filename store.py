@@ -26,8 +26,7 @@ class Graph():
         return self.edges
 
 """
-HackTheKISA 전용 vertex 클래스
-속성 추가 시 여러 부분을 수정해야 함 
+메모리 저장용 vertex 클래스 
 """
 class Vertex():
     def __init__(self,v):
