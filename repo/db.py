@@ -1,5 +1,6 @@
 import agensgraph as ag
 from psycopg2 import pool
+import query_repo as qr
 
 class QueryTemplate():
 
@@ -15,13 +16,18 @@ class QueryTemplate():
     def setGraphPath(self, path):
         self.cursor.execute("SET GRAPH_PATH TO "+path)
     
-    def doQuery(self, qry):
-        try:
-            self.cursor.execute(qry)
+    def doQuery(self, qry, params=None):
+        try: 
+            if params is not None:
+                self.cursor.execute(qry, params)
+            else:
+                self.cursor.execute(qry)
+
             return self.cursor.fetchall()
         
         except Exception, e:
-            print('error >> '+str(e))
+#             print('error >> '+str(e))
+            e
 
         finally:
             self.conn.commit()
@@ -37,3 +43,15 @@ class QueryTemplate():
 #             self.pool(self.conn)
 #         except Exception, e:
 #             print('error >> '+str(e))
+
+class Query():
+    def __init__(self, qt):
+        self.qt = qt
+        self.qr = qr.QueryRepo()
+    
+    def createEdgeByIp(self, queryPath, ipList):
+        query = self.qr.getQueryString(queryPath)
+                   
+        for ip in tuple(ipList):
+            self.qt.doQuery(query, {'source_ip':ip})
+        

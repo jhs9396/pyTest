@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import networkx
+
 """
 Graph element (Vertices, Edges)를 관리하는 클래스
 """
@@ -90,3 +92,9 @@ class ClusterMapper():
     def createNewCluster(self,clusterList):
         self.newCluster = clusterList
         
+class NetworkX():
+    def __init__(self):
+        self.G = networkx.graph()
+        
+    def getGraph(self):
+        return self.G

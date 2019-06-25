@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import store
+from repo import store
 
 class AnalysisClass():
     """
