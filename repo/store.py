@@ -47,6 +47,15 @@ class Vertex():
     def getData(self):
         return (self.id, self.label, self.properties)
     
+    def get(self):
+        properties = self.properties
+#         if 'detection_reason' in properties: del properties['detection_reason']
+        if 'data_stream' in properties: del properties['data_stream']
+        if 'type' in properties: del properties['type']
+        properties['cluster_id'] = int(self.cluster_id)
+        
+        return properties
+    
     def setClusterId(self,cluster_id):
         self.cluster_id = cluster_id
     
@@ -66,6 +75,9 @@ class ClusterMapper():
         self.cluster = cluster
         self.ruleMapper = dict()
         self.locMapper = dict()
+        self.louvainMethodCluster = dict()
+        self.girvanNewmanCluster = dict()
+        self.infomapCluster = dict()
         
     def setClusterListByRule(self,vertices):
         for vertex in vertices.values():
@@ -92,9 +104,30 @@ class ClusterMapper():
     def createNewCluster(self,clusterList):
         self.newCluster = clusterList
         
+    def setLouvainMethodCluster(self,partition):
+        cluster = 1
+        for com in set(partition.values()):
+            list_nodes = [nodes for nodes in partition.keys() if partition[nodes] == com]
+            self.louvainMethodCluster[cluster] = list_nodes 
+            cluster += 1
+    
+    def setGirvanNewmanCluster(self,partition):
+        cluster = 1
+        for node_list in tuple(sorted(c) for c in next(partition)):
+            self.girvanNewmanCluster[cluster] = node_list
+            cluster += 1
+    
 class NetworkX():
     def __init__(self):
-        self.G = networkx.graph()
+        self.G = networkx.Graph()
         
+    def add_edges_from(self,datum):
+        self.G.add_edges_from([tuple(d) for d in datum])
+    
     def getGraph(self):
         return self.G
+    
+    def clear(self):
+        self.__init__()
+        
+    

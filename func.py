@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from repo import store
+from util import file
+import algorithm
 
 class AnalysisClass():
     """
@@ -17,6 +19,9 @@ class AnalysisClass():
             
             vertex.setClusterId(self.getClusterIdByVid(vid))
             self.graph.setVertex(vid,vertex)
+            
+        self.nx = store.NetworkX()
+        self.community = algorithm.CommunityDetection(self.nx.getGraph())
     
     """
         클러스터에 속한 vertex들을 반환한다.
@@ -87,4 +92,39 @@ class AnalysisClass():
         
         return clusterList
         
+    def getClusterInfo(self,cluster,db=None):
+        for members in cluster:
+            for member in members[1]:
+                print(member)
+                
+    def exportCSV4ClusterNumber(self):
+        header = list()
+        results = list()
+        idx = 0
+        for cluster_id, members in self.cluster:
+            for vertex in self.getClusterMember(cluster_id):
+                result = list()
+                for key in vertex.get():
+                    if idx == 0: 
+                        header.append(key)
+                    result.append(vertex.get()[key])
+                
+                results.append(result)
+                idx += 1
+                
+        file.writeCSV('result.csv', header, results)
+                
+    def runLouvainMethod(self, datum):
+        self.nx.add_edges_from(datum)
+        self.clusterMapper.setLouvainMethodCluster(self.community.louvain_method())
+        self.nx.clear()
+        
+        return self.clusterMapper.louvainMethodCluster
+        
+    def runGirvanNewman(self, datum):
+        self.nx.add_edges_from(datum)
+        self.clusterMapper.setGirvanNewmanCluster(self.community.girvan_newman())
+        self.nx.clear()
+        
+        return self.clusterMapper.girvanNewmanCluster
     

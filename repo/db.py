@@ -54,4 +54,9 @@ class Query():
                    
         for ip in tuple(ipList):
             self.qt.doQuery(query, {'source_ip':ip})
+
+    def getVertex(self, gid):
+        return self.qt.doQuery(self.qr.getQueryString('reading.vertex'), {'id':gid})
+        
+        
         

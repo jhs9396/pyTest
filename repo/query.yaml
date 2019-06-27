@@ -48,7 +48,7 @@ reading:
         
   rightanwser2: |
      SELECT 
-        t1.b_id AS cluster_id, array_agg(DISTINCT b_id) || array_agg(c_id) AS nodes 
+        (ROW_NUMBER() OVER()) AS cluster_id, array_agg(DISTINCT b_id) || array_agg(c_id) AS nodes 
      FROM 
         (MATCH (a:test) WITH DISTINCT a.source_ip AS ip
         MATCH (b:test)<-[r:ref_to]-(c)
@@ -91,8 +91,32 @@ reading:
      GROUP BY
         t1.b_id
     
-         
-     
+  node2node: |
+     MATCH (a)-[r]->(b) WHERE id(a) <> id(b) RETURN id(a) AS node, id(b) AS neighbor
+  
+  ip4oneNode: |
+     SELECT 
+        t2.a->>'source_ip' AS ip
+     FROM (     
+        SELECT
+           t1.b_id AS id
+        FROM
+           (MATCH (a:test) WITH DISTINCT a.source_ip AS ip
+           MATCH (b:test)
+           WHERE ip = b.source_ip
+           AND NOT EXISTS ((b)-[]-())
+           RETURN DISTINCT id(b) AS b_id) t1
+        GROUP BY
+           t1.b_id) t1,
+           (MATCH (a:test) RETURN id(a) AS id, a) t2
+     WHERE 
+        t1.id = t2.id
+     ORDER BY
+        ip ASC
+        
+  vertex: |
+    MATCH (a) WHERE id(a) = %(id)s RETURN a 
+
 algorithm:
   louvain_method_result: |
     SELECT cluster_id, nodes FROM public.louvain_method_result

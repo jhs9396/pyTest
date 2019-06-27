@@ -1,23 +1,37 @@
 import func
 from repo import query_repo, db
 from nmi import nmi
+from service import logic
+from request import missinglink
 
 if __name__ == '__main__':
     qt = db.QueryTemplate()
     qr = query_repo.QueryRepo()
     
     qt.createConnectionPool(5, 20, "host=localhost port=15432 dbname=agens user=agens password=agens")
-    qt.setGraphPath("tmp")
-
+    qt.setGraphPath("agens")
+    print('####### initialize')
+#     qt.doQuery(qr.getQueryString('creation.vertex.test'))
+    
     print('####### start')
     
-    datum = qt.doQuery('MATCH (a) RETURN a LIMIT 100')
+    datum = qt.doQuery('MATCH (a) RETURN a LIMIT 5')
     cluster = qt.doQuery(qr.getQueryString('algorithm.louvain_method_result'))
+#     cluster = qt.doQuery(qr.getQueryString('reading.rightanwser2'))
+#     cluster = qt.doQuery(qr.getQueryString('algorithm.infomap_result'))
     
     print('####### analysis')
-    
+#     datum = qt.doQuery(qr.getQueryString('reading.node2node'))
+#     print(ac.runLouvainMethod(datum))
+#     print(ac.runGirvanNewman(datum))
+
     ac = func.AnalysisClass(datum,cluster)
     print(ac.getSimilarClusterList())
+#     ac.exportCSV4ClusterNumber()
+    
+    print('####### get cluster info')
+#     cluster = qt.doQuery(qr.getQueryString('reading.rightanwser2'))
+#     ac.getClusterInfo(cluster)
     
     print('####### create edges based on ip')    
     q = db.Query(qt)
@@ -47,14 +61,20 @@ if __name__ == '__main__':
 #     rightAnswer = qt.doQuery(qr.getQueryString('reading.rightanwser2'))
     
     # Not exists edge, vertex to vertex and include rightanswer1~2
-    rightAnswer = qt.doQuery(qr.getQueryString('reading.rightanwser3'))
-    print('NMI(louvain method) ', nmi.run(rightAnswer, cluster))
- 
-    cluster = qt.doQuery(qr.getQueryString('algorithm.girvan_newman_result'))
-    print('NMI(girvan_newman) ', nmi.run(rightAnswer, cluster))
-     
-    cluster = qt.doQuery(qr.getQueryString('algorithm.infomap_result'))
-    print('NMI(infomap) ', nmi.run(rightAnswer, cluster))
+#     rightAnswer = qt.doQuery(qr.getQueryString('reading.rightanwser3'))
+#     print('NMI(louvain method) ', nmi.run(rightAnswer, cluster))
+#  
+#     cluster = qt.doQuery(qr.getQueryString('algorithm.girvan_newman_result'))
+#     print('NMI(girvan_newman) ', nmi.run(rightAnswer, cluster))
+#      
+#     cluster = qt.doQuery(qr.getQueryString('algorithm.infomap_result'))
+#     print('NMI(infomap) ', nmi.run(rightAnswer, cluster))
+
+    print('####### missinglink')
+#     iplist = qt.doQuery(qr.getQueryString('reading.ip4oneNode'))
+#     requestList = logic.getSameClassIpList(iplist)
+#     for ip in requestList:
+#         missinglink.missinglink_sample(requestList[ip])
     
     print('####### end')
     qt.close()
