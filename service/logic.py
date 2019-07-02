@@ -13,12 +13,12 @@ def getSameClassIpList(iplist):
                     for nm in range(1,256):
                         newIp = cClass+'.'+str(nm)
                         requestArr[ip[0]].append(newIp)
-                
-                return requestArr 
-            
+                        
             except Exception, e:
                 print(e)
         
+    return requestArr 
+
         
         
     

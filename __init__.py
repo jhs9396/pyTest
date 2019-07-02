@@ -1,4 +1,4 @@
-import func
+from analysis import cluster_analysis as c_analyis
 from repo import query_repo, db
 from nmi import nmi
 from service import logic
@@ -11,27 +11,32 @@ if __name__ == '__main__':
     qt.createConnectionPool(5, 20, "host=localhost port=15432 dbname=agens user=agens password=agens")
     qt.setGraphPath("agens")
     print('####### initialize')
-#     qt.doQuery(qr.getQueryString('creation.vertex.test'))
+
     
     print('####### start')
     
-    datum = qt.doQuery('MATCH (a) RETURN a LIMIT 5')
+    datum = qt.doQuery('MATCH (a) RETURN a')
     cluster = qt.doQuery(qr.getQueryString('algorithm.louvain_method_result'))
-#     cluster = qt.doQuery(qr.getQueryString('reading.rightanwser2'))
-#     cluster = qt.doQuery(qr.getQueryString('algorithm.infomap_result'))
+#     cluster = qt.doQuery(qr.getQueryString('reading.rightanwser3'))
+    
+    print('####### clustering function execute')
+#     datum = qt.doQuery(qr.getQueryString('reading.node2node'))
+#     ca = c_analyis.ClusterAnalysis(datum)
+
+#     print(ca.runLouvainMethod(datum))
+#     print(ca.runGirvanNewman(datum))
     
     print('####### analysis')
-#     datum = qt.doQuery(qr.getQueryString('reading.node2node'))
-#     print(ac.runLouvainMethod(datum))
-#     print(ac.runGirvanNewman(datum))
+    ca = c_analyis.ClusterAnalysis(datum,cluster)
 
-    ac = func.AnalysisClass(datum,cluster)
-    print(ac.getSimilarClusterList())
-#     ac.exportCSV4ClusterNumber()
+#     print(ca.getSimilarClusterList())
+#     ca.exportCSV4ClusterNumber()
     
     print('####### get cluster info')
-#     cluster = qt.doQuery(qr.getQueryString('reading.rightanwser2'))
-#     ac.getClusterInfo(cluster)
+    ca.getDtimeStatistics(cluster)
+#     ca.getDetectionReasonCluster(cluster)
+#     
+#     print(ca.getMaxMemberCluster(cluster))
     
     print('####### create edges based on ip')    
     q = db.Query(qt)
@@ -75,6 +80,8 @@ if __name__ == '__main__':
 #     requestList = logic.getSameClassIpList(iplist)
 #     for ip in requestList:
 #         missinglink.missinglink_sample(requestList[ip])
+    
+    print('####### TF-IDF')
     
     print('####### end')
     qt.close()

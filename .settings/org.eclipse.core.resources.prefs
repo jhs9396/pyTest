@@ -1,3 +1,4 @@
 eclipse.preferences.version=1
+encoding//analysis/cluster_analysis.py=utf-8
 encoding//repo/store.py=utf-8
-encoding/func.py=utf-8
+encoding//util/tool.py=utf-8

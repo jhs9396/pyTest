@@ -37,7 +37,7 @@ reading:
   
   rightanwser: |
      SELECT 
-        t1.b_id AS cluster_id, array_agg(DISTINCT b_id) || array_agg(c_id) AS nodes 
+        (ROW_NUMBER() OVER())::int AS cluster_id, array_agg(DISTINCT b_id) || array_agg(c_id) AS nodes 
      FROM 
         (MATCH (a:test) WITH DISTINCT a.source_ip AS ip
         MATCH (b:test)<-[r:ref_to]-(c)
@@ -48,7 +48,7 @@ reading:
         
   rightanwser2: |
      SELECT 
-        (ROW_NUMBER() OVER()) AS cluster_id, array_agg(DISTINCT b_id) || array_agg(c_id) AS nodes 
+        (ROW_NUMBER() OVER())::int AS cluster_id, array_agg(DISTINCT b_id) || array_agg(c_id) AS nodes 
      FROM 
         (MATCH (a:test) WITH DISTINCT a.source_ip AS ip
         MATCH (b:test)<-[r:ref_to]-(c)
@@ -65,7 +65,7 @@ reading:
         
   rightanwser3: |
      SELECT 
-        t1.b_id AS cluster_id, array_agg(DISTINCT b_id) || array_agg(DISTINCT c_id) AS nodes 
+        (ROW_NUMBER() OVER())::int AS cluster_id, array_agg(DISTINCT b_id) || array_agg(DISTINCT c_id) AS nodes 
      FROM 
         (MATCH (a:test) WITH DISTINCT a.source_ip AS ip
         MATCH (b:test)<-[r:ref_to]-(c)
@@ -81,7 +81,7 @@ reading:
         t1.b_id
      UNION
      SELECT
-        t1.b_id AS cluster_id, array_agg(DISTINCT b_id) AS nodes
+        (ROW_NUMBER() OVER())::int AS cluster_id, array_agg(DISTINCT b_id) AS nodes
      FROM   
         (MATCH (a:test) WITH DISTINCT a.source_ip AS ip
         MATCH (b:test)

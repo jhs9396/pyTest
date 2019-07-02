@@ -1,28 +1,38 @@
 # -*- coding: utf-8 -*-
 from repo import store
 from util import file
-import algorithm
+from util.tool import to_list, to_time
+from analysis.algorithm import community_detection as cd
 
-class AnalysisClass():
+class ClusterAnalysis():
     """
     initialize
     """
-    def __init__(self, datum, cluster):
+    def __init__(self, datum, cluster=None):
+        # cluster based on search data 
         self.datum = datum
         self.cluster = cluster
         self.graph = store.Graph()
         self.clusterMapper = store.ClusterMapper(self.cluster)
         
+        # networkx
+        self.nx = store.NetworkX()
+        self.community = cd.CommunityDetection(self.nx.getGraph())
+
+        if self.cluster is not None:
+            self.handleCluster()
+
+    """
+    cluster data가 존재하는 경우 vertex에 클러스터 ID를 setting
+    """
+    def handleCluster(self):
         for data in tuple(self.datum):
             vertex = store.Vertex(data)
             (vid, label, properties) = vertex.getData()
             
             vertex.setClusterId(self.getClusterIdByVid(vid))
-            self.graph.setVertex(vid,vertex)
-            
-        self.nx = store.NetworkX()
-        self.community = algorithm.CommunityDetection(self.nx.getGraph())
-    
+            self.graph.setVertex(vid,vertex)        
+
     """
         클러스터에 속한 vertex들을 반환한다.
     """
@@ -35,7 +45,7 @@ class AnalysisClass():
     def getClusterIdByVid(self, vid):
         clusterId = ''
         for key, value in self.cluster:
-            valueArr = value.replace('{','').replace('}','').split(',')
+            valueArr = to_list(value)
             if vid in valueArr:
                 clusterId = key
         
@@ -92,11 +102,52 @@ class AnalysisClass():
         
         return clusterList
         
-    def getClusterInfo(self,cluster,db=None):
-        for members in cluster:
-            for member in members[1]:
-                print(member)
+    """
+    step 1. In clusters, dtime distinct and counting : complete
+    step 2. check clusters alive time : complete
+    """
+    def getDtimeStatistics(self,cluster,db=None):
+        dtimeDict = dict()
+        dtimeRangeDict = dict()
+
+        for cluster_id,members in cluster:
+            dtimeDict[cluster_id] = set()
+            for vertex in list(filter(lambda x:x['cluster_id'] == cluster_id, [self.graph.getVertex(member).get() for member in to_list(members)])):
+                dtimeDict[cluster_id].add(to_time(vertex['dtime']))
                 
+            dtimeRangeDict[cluster_id] = dict()
+            dtimeRangeDict[cluster_id]['alive'] = (max(dtimeDict[cluster_id]) - min(dtimeDict[cluster_id])).days + 1
+                
+        for cluster_id,members in cluster:
+            dtimeCntDict = dict()
+            for vertex in list(filter(lambda x:x['cluster_id'] == cluster_id, [self.graph.getVertex(member).get() for member in to_list(members)])):
+                for time in dtimeDict[cluster_id]:
+                    if to_time(vertex['dtime']) == time:
+                        if not dtimeCntDict.has_key(time):
+                            dtimeCntDict[time] = 0
+                        dtimeCntDict[time] += 1
+                
+            dtimeDict[cluster_id] = dtimeCntDict
+        
+        print('dtimeDict >> ', dtimeDict)
+        print('dtimeRangeDict >> ', dtimeRangeDict)
+
+    """
+    step 3. get each cluster detection reason distinct : complete
+    """
+    def getDetectionReasonCluster(self,cluster):
+        reasonDict = dict()
+        
+        for cluster_id, members in cluster:
+            reasonDict[cluster_id] = set()
+            for vertex in list(filter(lambda x:x['cluster_id'] == cluster_id, [self.graph.getVertex(member).get() for member in to_list(members)])):
+                reasonDict[cluster_id].add(vertex['detection_reason'])
+            
+#         print(reasonDict)
+        
+    def getMaxMemberCluster(self,cluster):
+        return reduce(lambda x,y: y if len(x) < len(y) else x, [(cluster_id, to_list(members)) for cluster_id, members in cluster])
+        
     def exportCSV4ClusterNumber(self):
         header = list()
         results = list()
@@ -127,4 +178,5 @@ class AnalysisClass():
         self.nx.clear()
         
         return self.clusterMapper.girvanNewmanCluster
+    
     

@@ -39,7 +39,7 @@ def missinglink_sample(values):
     else:
         # Request 'MissingLink-request' API
         res = requests.post(
-            url='http://localhost:4090/api/missinglink/request',
+            url='http://118.223.123.214:4090/api/missinglink/request',
             data=json.dumps(request_json),
         )
 

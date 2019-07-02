@@ -50,7 +50,7 @@ class Vertex():
     def get(self):
         properties = self.properties
 #         if 'detection_reason' in properties: del properties['detection_reason']
-        if 'data_stream' in properties: del properties['data_stream']
+#         if 'data_stream' in properties: del properties['data_stream']
         if 'type' in properties: del properties['type']
         properties['cluster_id'] = int(self.cluster_id)
         
