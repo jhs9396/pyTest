@@ -32,6 +32,8 @@ class QueryTemplate():
         finally:
             self.conn.commit()
     
+        self.conn.commit()
+
     def close(self):
         self.conn.close()
         self.cursor.close()

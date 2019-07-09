@@ -8,9 +8,12 @@ class Graph():
     def __init__(self):
         self.vertices = dict()
         self.edges = dict()
+        self.verticesKeys = set()
     
     def setVertex(self,vid,vertex):
         self.vertices[vid] = vertex
+        for key in vertex.get().keys():
+            self.verticesKeys.add(key)
         
     def setEdge(self,eid,edge):
         self.edges[eid] = edge
@@ -23,6 +26,9 @@ class Graph():
     
     def getVertices(self):
         return self.vertices
+    
+    def vKeys(self):
+        return self.verticesKeys
     
     def getEdges(self):
         return self.edges
@@ -47,12 +53,17 @@ class Vertex():
     def getData(self):
         return (self.id, self.label, self.properties)
     
+    def getGid(self):
+        return self.id
+    
     def get(self):
         properties = self.properties
-#         if 'detection_reason' in properties: del properties['detection_reason']
+        if 'detection_reason' in properties: del properties['detection_reason']
 #         if 'data_stream' in properties: del properties['data_stream']
+#         if 'url' in properties: del properties['url']
         if 'type' in properties: del properties['type']
-        properties['cluster_id'] = int(self.cluster_id)
+        if hasattr(self, 'cluster_id'):
+            properties['cluster_id'] = self.cluster_id
         
         return properties
     

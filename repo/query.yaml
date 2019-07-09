@@ -31,6 +31,10 @@ creation:
       AND (NOT EXISTS ((a)<-[:similar_to]-(a1)) OR NOT EXISTS ((a)-[:similar_to]->(a1)))
       CREATE (a)<-[:similar_to {weight:ip_similarity}]-(a1)
       
+  table:
+    insert_cluster_ch: |
+      INSERT INTO public.cluster_ch VALUES (%(cluster_id)s, %(characteristic)s)
+      
 reading:
   iplist: |
     MATCH (a:test) RETURN DISTINCT a.source_ip AS ip
@@ -91,6 +95,23 @@ reading:
      GROUP BY
         t1.b_id
     
+  rightanwser4: |
+     SELECT 
+        (ROW_NUMBER() OVER())::int AS cluster_id, array_agg(DISTINCT b_id) || array_agg(c_id) AS nodes 
+     FROM 
+        (MATCH (a:ioc) WITH DISTINCT a.value AS value
+        MATCH (b:ioc)<-[r:ref_to]-(c)
+        WHERE value = b.value
+        RETURN DISTINCT id(b) AS b_id, id(c) AS c_id
+        UNION
+        MATCH (a:ioc) WITH DISTINCT a.value AS value
+        MATCH (b:ioc)-[r:similar_to]-(c:ioc)
+        WHERE value = b.value
+        RETURN DISTINCT id(b) AS b_id, id(c) AS c_id
+        ) t1
+     GROUP BY 
+        t1.b_id
+  
   node2node: |
      MATCH (a)-[r]->(b) WHERE id(a) <> id(b) RETURN id(a) AS node, id(b) AS neighbor
   

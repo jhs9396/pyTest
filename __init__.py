@@ -11,13 +11,14 @@ if __name__ == '__main__':
     qt.createConnectionPool(5, 20, "host=localhost port=15432 dbname=agens user=agens password=agens")
     qt.setGraphPath("agens")
     print('####### initialize')
-
+#     qt.doQuery(qr.getQueryString('creation.vertex.hackthekisa'))
     
     print('####### start')
-    
     datum = qt.doQuery('MATCH (a) RETURN a')
-    cluster = qt.doQuery(qr.getQueryString('algorithm.louvain_method_result'))
+#     cluster = qt.doQuery(qr.getQueryString('algorithm.louvain_method_result'))
 #     cluster = qt.doQuery(qr.getQueryString('reading.rightanwser3'))
+    cluster = qt.doQuery(qr.getQueryString('reading.rightanwser4'))
+
     
     print('####### clustering function execute')
 #     datum = qt.doQuery(qr.getQueryString('reading.node2node'))
@@ -33,7 +34,7 @@ if __name__ == '__main__':
 #     ca.exportCSV4ClusterNumber()
     
     print('####### get cluster info')
-    ca.getDtimeStatistics(cluster)
+#     ca.getDtimeStatistics(cluster)
 #     ca.getDetectionReasonCluster(cluster)
 #     
 #     print(ca.getMaxMemberCluster(cluster))
@@ -82,6 +83,8 @@ if __name__ == '__main__':
 #         missinglink.missinglink_sample(requestList[ip])
     
     print('####### TF-IDF')
+    ca.insertClusterTfIdf(qt=qt, qr=qr)
+    
     
     print('####### end')
     qt.close()
