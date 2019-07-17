@@ -1,7 +1,15 @@
 import agensgraph as ag
+# import psycopg2 as pg
 from psycopg2 import pool
 import query_repo as qr
+from util.format import graph_format
 
+"""
+postgresql connection driver template
+create connection pool
+set graph path
+execute method
+"""
 class QueryTemplate():
 
     def createConnectionPool(self, minConnection, maxConnection, info):
@@ -23,17 +31,17 @@ class QueryTemplate():
             else:
                 self.cursor.execute(qry)
 
-            return self.cursor.fetchall()
+            records = self.cursor.fetchall()
+            
+#             graph_format.convertGraphObject(records)
         
+            return records
         except Exception, e:
-#             print('error >> '+str(e))
             e
 
         finally:
             self.conn.commit()
     
-        self.conn.commit()
-
     def close(self):
         self.conn.close()
         self.cursor.close()

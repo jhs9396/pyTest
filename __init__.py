@@ -1,4 +1,5 @@
 from analysis import cluster_analysis as c_analyis
+from analysis.algorithm import centrality
 from repo import query_repo, db
 from nmi import nmi
 from service import logic
@@ -8,16 +9,22 @@ if __name__ == '__main__':
     qt = db.QueryTemplate()
     qr = query_repo.QueryRepo()
     
-    qt.createConnectionPool(5, 20, "host=localhost port=15432 dbname=agens user=agens password=agens")
-    qt.setGraphPath("agens")
+    qt.createConnectionPool(5, 20, "host=192.168.0.68 port=5555 dbname=agens user=agens password=agens")
+    qt.setGraphPath("movie_graph")
     print('####### initialize')
 #     qt.doQuery(qr.getQueryString('creation.vertex.hackthekisa'))
     
+    print('####### developer area')
+    datum = qt.doQuery('MATCH (a)-[r]->(b) RETURN a,r,b')
+    cent = centrality.Centrality(datum)
+    
     print('####### start')
-    datum = qt.doQuery('MATCH (a) RETURN a')
+#     datum = qt.doQuery('SELECT * FROM pg_stat_activity LIMIT 5')
+#     datum = qt.doQuery('MATCH path=(a)-[r]->(b) RETURN path LIMIT 2')        
+
 #     cluster = qt.doQuery(qr.getQueryString('algorithm.louvain_method_result'))
 #     cluster = qt.doQuery(qr.getQueryString('reading.rightanwser3'))
-    cluster = qt.doQuery(qr.getQueryString('reading.rightanwser4'))
+#     cluster = qt.doQuery(qr.getQueryString('reading.rightanwser4'))
 
     
     print('####### clustering function execute')
@@ -28,7 +35,7 @@ if __name__ == '__main__':
 #     print(ca.runGirvanNewman(datum))
     
     print('####### analysis')
-    ca = c_analyis.ClusterAnalysis(datum,cluster)
+#     ca = c_analyis.ClusterAnalysis(datum,cluster)
 
 #     print(ca.getSimilarClusterList())
 #     ca.exportCSV4ClusterNumber()
@@ -83,7 +90,7 @@ if __name__ == '__main__':
 #         missinglink.missinglink_sample(requestList[ip])
     
     print('####### TF-IDF')
-    ca.insertClusterTfIdf(qt=qt, qr=qr)
+#     ca.insertClusterTfIdf(qt=qt, qr=qr)
     
     
     print('####### end')

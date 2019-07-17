@@ -41,7 +41,7 @@ class Vertex():
         self.id = None
         self.label = None
         self.properties = dict()
-        self.setData(v[0])
+        self.setData(v)
 
     def setData(self,v):
         for key in v:
@@ -76,7 +76,34 @@ class Vertex():
     def compareData(self,datum):
         (vid, rule, location) = datum
         return True if self.id is vid and self.properties['rule'] is rule and self.properties['location'] is location else False
+
+"""
+memory edge store class
+"""
+class Edge():
+    def __init__(self,e):
+        self.id = None
+        self.label = None
+        self.properties = dict()
+        self.source = None
+        self.target = None
+        self.setData(e)
         
+    def setData(self,e):
+        for key in e:
+            self.id = e[key] if key is 'eid' else self.id
+            self.label = e[key] if key is 'label' else self.label
+            self.source = e[key] if key is 'source_vid' else self.source
+            self.target = e[key] if key is 'destination_vid' else self.target
+            if key is not 'eid' and key is not 'label' and key is not 'source_vid' and key is not 'destination_vid':
+                self.properties[key] = e[key]
+                
+    def get(self):
+        return self.properties
+    
+    def getGid(self):
+        return self.id
+
 
 """
 클러스터 정보와 mapper정보를 담고있는 클래스
